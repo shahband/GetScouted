@@ -1,0 +1,89 @@
+Aerial ability
+Positional sense
+Decision making
+Agility
+Work rate
+Tackling
+Interception
+Passing
+Shooting
+Dribbling
+Kill final passes
+Finishing
+Skills
+
+
+
+Algorithm (Shouldn't clash between positions) 
+2 primary identifiers, 1-2 backup
+P = Primary  BP = Backup
+
+
+select a record
+Take data 
+sort attributes
+top 2 secel
+
+
+
+Goalkeeper : Highest Decision Making(P), Positional Sense(P)
+
+
+Defender:
+	Centre Backs (CB) = Highest Aerial ability(P), Decison Making(P), Interception(BP) 
+	Full Backs (LB + RB) = Highest Agility(P), Positional Sense(P), Interception(BP)
+
+
+Midfielder:
+	Central Defending Midfeilder (CDM) = Highest Work Rate(BP), Tackling(P), Interception(P)
+	Central Attacking Midfeilder (CAM) = Highest Kill Final Passes(P), Shooting(P)
+	Wingers (LW + RW) = Highest Shooting(BP), Assist(P), Positional Sense(P)
+
+
+Strikers:
+	Central Forward (CF) = Highest Finishing(P), Shooting(P), Positional Sense(BP)
+
+
+aerialability,
+positionalsense,
+decisionmaking,
+agility,
+workrate,
+tackling,
+interception,
+passing,
+shooting,
+dribbling,
+killfinal,
+finishing,
+skills,
+
+
+
+SELECT TOP 2 
+(
+  SELECT MAX(TAttribute)
+  FROM (VALUES (aerialability),(positionalsense),(decisionmaking),(agility),(workrate),(tackling),(interception),(passing),(shooting),(dribbling),(killfinal),(finishing),(skills) as temp(TAttribute))
+  AS FirstMax, SecondMax
+  FROM
+  Report;
+) 
+
+
+SELECT FirstMax, SecondMax,
+CASE 
+  WHEN FirstMax == decisionmaking && SecondMax == positionalsense || FirstMax == positionalsense && SecondMax == decisionmaking THEN 'Goalkeeper'
+
+  WHEN FirstMax == aerialability && SecondMax == decisionmaking|| FirstMax == decisionmaking && SecondMax == aerialability THEN 'Defender - Centre Back (CB)'
+  WHEN FirstMax == agility && SecondMax == positionalsense|| FirstMax == positionalsense && SecondMax == agility THEN 'Defender - Full Back (LB + RB)'
+  
+  WHEN FirstMax == workrate && SecondMax == tackling || FirstMax == tackling && SecondMax == workrate THEN 'Midfielder - Central Defending (CDM)'
+  WHEN FirstMax == killfinal && SecondMax == shooting || FirstMax == shooting && SecondMax == killfinal THEN 'Midfielder - Central Attacking (CAM)'
+  WHEN FirstMax == shooting && SecondMax == assist || FirstMax == assist && SecondMax == shooting THEN 'Midfielder - Wingers (LW + RW)'
+
+  WHEN FirstMax == finishing && SecondMax == shooting || FirstMax == shooting && SecondMax == finishing THEN 'Striker - Central Forward (CF + LF + RF)'
+
+  ELSE 'No optimum position'
+END AS OptimumPosition
+FROM Report;
+
